@@ -4,6 +4,11 @@ var score = 0
 
 @onready var score_label = $ScoreLabel
 
+func _ready():
+	if OS.has_feature("dedicated_server"):
+		print("Starting dedicated server...")
+		MultiplayerManager.become_host()
+
 func add_point():
 	score += 1
 	score_label.text = "You collected " + str(score) + " coins."
