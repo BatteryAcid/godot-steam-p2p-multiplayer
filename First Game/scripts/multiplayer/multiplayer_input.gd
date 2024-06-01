@@ -2,7 +2,8 @@ extends MultiplayerSynchronizer
 
 @onready var player = $".."
 
-var input_direction 
+var input_direction
+var username = ""
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -12,6 +13,8 @@ func _ready():
 		set_physics_process(false)
 	
 	input_direction = Input.get_axis("move_left", "move_right")
+	
+	username = SteamManager.steam_username
 
 func _physics_process(delta):
 	input_direction = Input.get_axis("move_left", "move_right")

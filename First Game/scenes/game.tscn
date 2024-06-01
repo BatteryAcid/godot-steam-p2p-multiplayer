@@ -1,10 +1,11 @@
-[gd_scene load_steps=18 format=3 uid="uid://cuv4vme4rwno0"]
+[gd_scene load_steps=19 format=3 uid="uid://cuv4vme4rwno0"]
 
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_l4ihi"]
 [ext_resource type="PackedScene" uid="uid://dqnaqj8yb6hwd" path="res://scenes/player.tscn" id="1_rbmkf"]
 [ext_resource type="FontFile" uid="uid://c53kogtyjwsss" path="res://assets/fonts/PixelOperator8-Bold.ttf" id="2_nlliu"]
 [ext_resource type="Texture2D" uid="uid://d0q2g65ahgok" path="res://assets/sprites/world_tileset.png" id="2_r1crl"]
 [ext_resource type="PackedScene" uid="uid://bgv5v2fxqlswe" path="res://scenes/platform.tscn" id="3_cmfc3"]
+[ext_resource type="Script" path="res://scripts/multiplayer/networks/network_manager.gd" id="3_sp8dn"]
 [ext_resource type="PackedScene" uid="uid://pqp5qaw561fr" path="res://scenes/coin.tscn" id="4_28cek"]
 [ext_resource type="PackedScene" uid="uid://dtrbka1ef726o" path="res://scenes/killzone.tscn" id="5_x8euu"]
 [ext_resource type="PackedScene" uid="uid://d2w2i5h0lhc6l" path="res://scenes/slime.tscn" id="6_l0s6b"]
@@ -476,6 +477,11 @@ text = "You collected X coins."
 horizontal_alignment = 1
 autowrap_mode = 2
 
+[node name="NetworkManager" type="Node" parent="." node_paths=PackedStringArray("_players_spawn_node")]
+unique_name_in_owner = true
+script = ExtResource("3_sp8dn")
+_players_spawn_node = NodePath("../Players")
+
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = SubResource("TileSet_wvtw0")
 format = 2
@@ -595,7 +601,8 @@ unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 0
 offset_left = -110.0
-offset_bottom = 35.0
+offset_top = -36.0
+offset_bottom = 24.0
 
 [node name="Panel" type="Panel" parent="MultiplayerHUD"]
 layout_mode = 1
@@ -616,16 +623,75 @@ theme_override_fonts/font = ExtResource("2_nlliu")
 theme_override_font_sizes/font_size = 8
 text = "Host New Game"
 
-[node name="JoinAsPlayer2" type="Button" parent="MultiplayerHUD/Panel/VBoxContainer"]
+[node name="JoinAsClient" type="Button" parent="MultiplayerHUD/Panel/VBoxContainer"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("7_8cblx")
 theme_override_font_sizes/font_size = 8
-text = "Join as Player 2"
+text = "Join as Client"
+
+[node name="UseSteam" type="Button" parent="MultiplayerHUD/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("7_8cblx")
+theme_override_font_sizes/font_size = 8
+text = "Use Steam"
+
+[node name="SteamHUD" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_left = -110.0
+offset_top = -36.0
+offset_right = 10.0
+offset_bottom = 64.0
+
+[node name="Panel" type="Panel" parent="SteamHUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Options" type="VBoxContainer" parent="SteamHUD/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HostP2PGame" type="Button" parent="SteamHUD/Panel/Options"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("7_8cblx")
+theme_override_font_sizes/font_size = 8
+text = "Host P2P Game"
+
+[node name="ListLobbies" type="Button" parent="SteamHUD/Panel/Options"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("7_8cblx")
+theme_override_font_sizes/font_size = 8
+text = "List Lobbies"
+
+[node name="Lobbies" type="ScrollContainer" parent="SteamHUD/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 37.0
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SteamHUD/Panel/Lobbies"]
+layout_mode = 2
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://scenes/multiplayer_player.tscn")
 spawn_path = NodePath("../Players")
-spawn_limit = 2
+spawn_limit = 10
 
 [node name="Players" type="Node2D" parent="."]
 
@@ -638,5 +704,8 @@ position = Vector2(622.5, -136.5)
 shape = SubResource("RectangleShape2D_2186x")
 
 [connection signal="pressed" from="MultiplayerHUD/Panel/VBoxContainer/HostGame" to="GameManager" method="become_host"]
-[connection signal="pressed" from="MultiplayerHUD/Panel/VBoxContainer/JoinAsPlayer2" to="GameManager" method="join_as_player_2"]
+[connection signal="pressed" from="MultiplayerHUD/Panel/VBoxContainer/JoinAsClient" to="GameManager" method="join_as_client"]
+[connection signal="pressed" from="MultiplayerHUD/Panel/VBoxContainer/UseSteam" to="GameManager" method="use_steam"]
+[connection signal="pressed" from="SteamHUD/Panel/Options/HostP2PGame" to="GameManager" method="become_host"]
+[connection signal="pressed" from="SteamHUD/Panel/Options/ListLobbies" to="GameManager" method="list_steam_lobbies"]
 [connection signal="body_entered" from="FinishLine" to="FinishLine" method="_on_body_entered"]
