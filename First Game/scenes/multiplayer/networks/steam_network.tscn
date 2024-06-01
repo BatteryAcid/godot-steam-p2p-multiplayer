@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cay466cydgq0k"]
+
+[ext_resource type="Script" path="res://scripts/multiplayer/networks/steam_network.gd" id="1_2bv4x"]
+
+[node name="SteamNetwork" type="Node"]
+script = ExtResource("1_2bv4x")

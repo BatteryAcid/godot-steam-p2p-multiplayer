@@ -13,6 +13,9 @@ var do_jump = false
 var _is_on_floor = true
 var alive = true
 
+@onready var username_label = $Username
+var username = ""
+
 @export var player_id := 1:
 	set(id):
 		player_id = id
@@ -60,6 +63,8 @@ func _apply_movement_from_input(delta):
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 
 	move_and_slide()
+	
+	username = %InputSynchronizer.username
 
 func _physics_process(delta):
 	if multiplayer.is_server():
@@ -71,6 +76,9 @@ func _physics_process(delta):
 		
 	if not multiplayer.is_server() || MultiplayerManager.host_mode_enabled:
 		_apply_animations(delta)
+		
+		if username_label && username != "":
+			username_label.set_text(username)
 
 func mark_dead():
 	print("Mark player dead!")

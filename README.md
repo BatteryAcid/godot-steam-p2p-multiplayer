@@ -1,3 +1,17 @@
+# Godot + Steam - P2P Multiplayer
+
+This version uses SteamMultiplayerPeer from GodotSteam to enable P2P multiplayer over Steam networks.
+
+> Tutorial: https://youtu.be/MoRl9kQb6L0
+
+⭐️ *In order for this project to recognize Steam and SteamMultiplayerPeer, you must open it in the pre-compiled Multiplayer Peer build of Godot*:
+
+- https://godotsteam.com/#__tabbed_1_2
+
+*To Export you must use a template supplied in the zip file above: "godotsteam-g422-s159-gs48-mp-templates.zip"*
+- Exporting: https://godotsteam.com/tutorials/exporting_shipping/
+
+---
 
 # Basic Multiplayer Version
 
