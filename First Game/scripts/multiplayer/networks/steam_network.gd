@@ -9,37 +9,47 @@ const LOBBY_NAME = "BAD"
 const LOBBY_MODE = "CoOP"
 
 func  _ready():
-	multiplayer_peer.lobby_created.connect(_on_lobby_created)
+	Steam.connect("lobby_created", _on_lobby_created)
+	Steam.lobby_joined.connect(_on_lobby_joined)
 
 func become_host():
 	print("Starting host!")
 	
-	multiplayer_peer.create_lobby(SteamMultiplayerPeer.LOBBY_TYPE_PUBLIC, SteamManager.lobby_max_members)
-	
-	multiplayer.multiplayer_peer = multiplayer_peer
-	
+	Steam.createLobby(Steam.LOBBY_TYPE_PUBLIC, SteamManager.lobby_max_members)
+
 	multiplayer.peer_connected.connect(_add_player_to_game)
 	multiplayer.peer_disconnected.connect(_del_player)
 
 	if not OS.has_feature("dedicated_server"):
 		_add_player_to_game(1)
-	
-func join_as_client(lobby_id):
-	print("Joining lobby %s" % lobby_id)
-	
-	multiplayer_peer.connect_lobby(lobby_id)
-	multiplayer.multiplayer_peer = multiplayer_peer
 
-func _on_lobby_created(connect: int, lobby_id):
+func _on_lobby_created(connect_status: int, lobby_id):
 	print("On lobby created")
-	if connect == 1:
+	if connect_status == Steam.RESULT_OK:
+		print("Created lobby: %s" % lobby_id)
+		
 		_hosted_lobby_id = lobby_id
-		print("Created lobby: %s" % _hosted_lobby_id)
+
+		multiplayer_peer.host_with_lobby(lobby_id)
+		multiplayer.multiplayer_peer = multiplayer_peer
 		
 		Steam.setLobbyJoinable(_hosted_lobby_id, true)
 		
 		Steam.setLobbyData(_hosted_lobby_id, "name", LOBBY_NAME)
 		Steam.setLobbyData(_hosted_lobby_id, "mode", LOBBY_MODE)
+
+func join_as_client(lobby_id):
+	print("Joining lobby %s" % lobby_id)
+	Steam.joinLobby(lobby_id)
+
+func _on_lobby_joined(lobby_id: int, _permissions: int, _locked: bool, _response: int) -> void:
+	print("On lobby joined %s" % lobby_id)
+	if Steam.getLobbyOwner(lobby_id) == Steam.getSteamID():
+		print("Lobby host already in lobby, bypassing...")
+		return
+		
+	multiplayer_peer.connect_to_lobby(lobby_id)
+	multiplayer.multiplayer_peer = multiplayer_peer
 
 func list_lobbies():
 	Steam.addRequestLobbyListDistanceFilter(Steam.LOBBY_DISTANCE_FILTER_WORLDWIDE)
